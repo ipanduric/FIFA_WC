@@ -1,0 +1,287 @@
+﻿
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title> FIFA </title>
+<style>
+   
+.text{
+  font-size:10px;
+  text-transform:capitalize;
+}
+body{
+	background-color:white;	
+	}
+	
+path {
+  stroke: black;
+  stroke-width: 0.5px;
+  fill: white;
+}
+
+#naslov {
+	font: 40px italic;
+	}	
+
+#map-div{
+	border: 1px solid black;
+	border-radius: 5px;
+	width: 900px;
+	height: 500px;
+	/*display:block-inline;*/
+	float:left;	
+	margin-top:40px;
+	}
+
+	
+#choose{
+	border-radius: 5px;
+	width: 300px;
+	height: 245px;
+	float:left;
+	margin-left: 5px;
+	margin-top: 100px;
+	padding: 20px;
+	padding-left: 10px;
+	color: black;
+	}
+#choose span {
+	margin-left: 50px;
+	}
+
+.d3-tip {
+	line-height: 1;
+  font-weight: bold;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  border-radius: 2px;
+  margin-top: 5%;
+ 
+}
+
+#home {
+	float:right;
+}
+
+label {
+font-family: Cambria;
+font-size: 17px;
+}
+
+input[type='radio'] {
+  -webkit-appearance:none;
+  width:15px;
+  height:15px;
+  border:1px solid darkgray;
+  border-radius:50%;
+  outline:none;
+  box-shadow:0 0 10px 0px grey inset;
+}
+
+input[type='radio']:hover {
+  box-shadow:0 0 10px 0px black inset;
+}
+
+input[type='radio']:before {
+  content:'';
+  display:block;
+  width:60%;
+  height:60%;
+  margin: 20% auto;    
+  border-radius:50%;    
+}
+input[type='radio']:checked:before {
+  background:green;
+}
+
+</style>
+<body background="FIFAWC.jpg" style="background-size: 100%">
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="http://d3js.org/topojson.v0.min.js"></script>
+<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+
+</div>
+<div id ="choose">
+<span>
+	<br>
+<label><input type="radio" name="dataset" value="win" id="win">Broj pobjeda</label><br>
+<label><input type="radio" name="dataset" value="sudjelovanje" id="sudjelovanje" >Broj sudjelovanja </label><br>
+<label><input type="radio" name="dataset" value="gol" id="gol">Broj golova </label><br>
+<label><input type="radio" name="dataset" value="tekma" id="tekma">Broj utakmica </label><br>
+<label><input type="radio" name="dataset" value="sg" id="sg">Prosječan broj golova po sudjelovanju </label><br>
+<label><input type="radio" name="dataset" value="gm" id="gm">Prosječan broj golova po utakmici </label><br>
+<label><input type="radio" name="dataset" value="zuti" id="zuti">Broj žutih kartona </label><br>
+<label><input type="radio" name="dataset" value="crveni" id="crveni">Broj crvenih kartona </label><br>
+</span>
+</div>
+
+<div id="home">
+	<a href="home.html">
+<img border="0" alt="Home" src="home.png" width="50" height="50">
+	
+</div>
+
+<div id="map-div">
+
+</div>
+
+<script>
+var width = 900,
+    height = 500,
+	widthBar = 200,
+	heightBar = 15;
+		
+var karta = d3.geo.mercator();
+
+var svg = d3.select("#map-div").append("svg")
+    .attr("width", width)
+    .attr("height", height)
+	.style("background-color", "lightblue");
+		
+	
+var path = d3.geo.path().projection(karta);
+var g = svg.append("g");
+
+var scolor = d3.scale.linear().domain([0,20])
+		.interpolate(d3.interpolateHcl)
+		.range ([d3.rgb("#FBEFF8"), d3.rgb("#B40486")]);
+
+var gcolor = d3.scale.linear().domain([0,224])
+		.interpolate(d3.interpolateHcl)
+		.range ([d3.rgb("#FBF8EF"), d3.rgb("#61380B")]);
+
+var tcolor = d3.scale.linear().domain([0,106])
+		.interpolate(d3.interpolateHcl)
+		.range ([d3.rgb("#fff"), d3.rgb("#3A2F0B")]);
+
+var sgcolor = d3.scale.linear().domain([0,10])
+		.interpolate(d3.interpolateHcl)
+		.range ([d3.rgb("#EFFBEF"), d3.rgb("#088A08")]);
+
+var gmcolor = d3.scale.linear().domain([0,2])
+		.interpolate(d3.interpolateHcl)
+		.range ([d3.rgb("#F5EFFB"), d3.rgb("#380B61")]);
+
+var wincolor = d3.scale.linear().domain([0,5])
+		.interpolate(d3.interpolateHcl)
+		.range ([d3.rgb("#fff"), d3.rgb("#0101DF")]);
+	
+var ccolor = d3.scale.linear().domain([0,11])
+		.interpolate(d3.interpolateHcl)
+		.range ([d3.rgb("#FBEFEF"), d3.rgb("#FF0000")]);
+
+var zcolor = d3.scale.linear().domain([0,111])
+		.interpolate(d3.interpolateHcl)
+		.range ([d3.rgb("#FBFBEF"), d3.rgb("#D7DF01")]);
+		
+
+var map = d3.json("karta.json", function(error, topology) {
+    g.selectAll("path")
+    .data(topojson.object(topology, topology.objects.countries).geometries)
+    .enter()
+    .append("path")
+    .attr("d", path)
+	.style("fill", function(d) {  return d.properties.color;})
+	.attr("id", function(d,i) { return d.id; })
+	.attr("title", function(d,i) { return d.properties.name; })    
+	.on('mouseover', function (d,i) {  
+		
+	d3.select(this).transition()
+					.duration(300)
+					.style("opacity","0.4")
+					
+		
+	})
+	.on('mousemove.tooltip', tip.show)
+
+	.on('mouseout', function (d) {  
+
+	d3.select(this).transition()
+					.duration(300)
+					.style("opacity","1")
+					tip.hide(d);
+	});
+});
+
+
+d3.selectAll("input")
+      .on("change", change);
+
+	  function change(){
+
+	g.selectAll("path")
+	.transition()
+	.duration(500)
+	.style("fill", function (d,i){ 	
+	        var value = d3.select('input[name="dataset"]:checked').node().value;
+	if (value=="win")
+			{ return wincolor (d.properties.naslov);}
+	else if (value=="sudjelovanje")
+		{ return scolor (d.properties.sudjelovanje);}
+	else if (value=="tekma")
+		{ return tcolor(d.properties.tekma);}
+	else if (value=="gol")
+		{ return gcolor (d.properties.golovi);}
+	else if (value=="sg")
+		{ return sgcolor ((d.properties.sg));}
+	else if (value=="gm")
+		{ return gmcolor ((d.properties.gm));}
+	else if (value=="zuti")
+		{ return zcolor ((d.properties.zuti));}
+	else if (value=="crveni")
+		{ return ccolor ((d.properties.crveni));}
+	else return d.properties.color;});
+}
+
+// zoom and pan
+var zoom = d3.behavior.zoom()
+	.scaleExtent([1, 9])
+	.on("zoom",function() {
+        g.attr("transform","translate("+d3.event.translate.join(",")+")scale("+d3.event.scale+")");
+        g.selectAll("path")  
+         .attr("d", path.projection(karta)); 
+  });
+  var tip = d3.tip()
+  .attr('class', 'd3-tip')  
+ tip.offset(function() {
+  return [this.getBBox().height / 3, 0]
+})
+   .html(function(d) {
+	
+	var value = d3.select('input[name="dataset"]:checked').node().value;
+
+	if (value=="win")
+		{ return " <span style='color:blue'>" + d.properties.name + ": " + d.properties.naslov + "</span>";}
+	
+	else if (value=="sudjelovanje")
+	   { return " <span style='color:purple'>" + d.properties.name + ": " + d.properties.sudjelovanje + "</span>"; }
+
+	else if (value=="tekma")
+	   { return " <span style='color:olive'>" + d.properties.name + ": " + d.properties.tekma + "</span>";}
+
+	else if (value=="gol")
+	   { return " <span style='color:brown'>" + d.properties.name + ": " + d.properties.golovi + "</span>"; }
+
+	else if (value=="sg")
+	   { return " <span style='color:green'>" + d.properties.name + ": " + d.properties.sg + "</span>";}
+
+	else if (value=="gm")
+	   { return " <span style='color:purple'>" + d.properties.name + ": " + d.properties.gm + "</span>"; }
+
+	else if (value=="zuti")
+	   { return " <span style='color:yellow'>" + d.properties.name + ": " + d.properties.zuti + "</span>";}
+
+	else if (value=="crveni")
+	   { return " <span style='color:red'>" + d.properties.name + ": " + d.properties.crveni + "</span>";}
+
+	else    {return " <span style='color:black'>" + d.properties.name + "</span>";}
+  })
+  svg.call(tip);
+
+svg.call(zoom)
+
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head>
+<style>
+      
+    h4 {
+        color: darkgreen;
+        text-align: right;
+        font-family: Cambria;
+        float: right;
+        margin-top: -30px;
+        margin-right: 55px;
+        font-size: 25px;
+    }
+   
+    h3 {
+        color: black;
+        text-align: center;
+        margin-left: 100px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        font-family: Cambria;
+        
+    }  
+    p {
+        color: black;
+        text-align: center;
+        font-family: Cambria;
+        font-size: 15px;
+        margin-left:130px;
+       
+    }
+
+    .barStr {
+    fill: darkgreen;
+  }
+  
+    #barchart {
+        width:100px;
+        margin-left: 10px;             
+    }  
+
+.bar{
+    fill: darkgreen;
+  }
+
+  .bar:hover{
+    fill: black;
+  }
+
+	.axis {
+	  font: 20px  sans-serif;
+	}
+    .axis text {
+        fill:black;
+    }
+	.axis path,
+	.axis line {
+	  fill: none;
+	  stroke: black;
+	  
+	}
+  .d3-tip {
+  line-height: 1;
+  font-weight: bold;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  border-radius: 2px;
+}
+#home {
+	float:right;
+    margin-top:0%;
+}
+    </style>
+
+</head>
+<body background="FIFA.jpg" style="background-size: 100%">
+
+
+<div><h3>Broj postignutih golova na pojedinom prvenstvu </h3>
+<div id="home">
+	<a href="home.html">
+<img border="0" alt="Home" src="home.png" width="30" height="30"></div></a>
+<p>(klikom na element pogledajte top 10 strijelaca)</p>
+<div id="barchart">
+    </div>   
+
+
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+<script src="golovi.js"></script> 
+</body>
+</html>
