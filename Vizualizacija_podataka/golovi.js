@@ -60,18 +60,18 @@ svg.call(tip);
       .style("text-anchor", "end")
       .text("Broj golova");
 
-  // Add bar chart
+  
   svg.selectAll("bar")
       .data(data)
     .enter().append("rect")
     .on('mouseover', tip.show)
     .on('mouseout', tip.hide)
-    .on("click", clicked)
+    .on("click", clicked) //poziv funkcije clicked
       .attr("class", "bar")   
       .attr ("height", 0)   
-      .transition()      
+      .transition()      //tranzicija
       .duration(10)   
-      .delay(function(d,i){ return i*150})  
+      .delay(function(d,i){ return i*150})  //pojavljivanje stupaca sa kašnjenjem
       .attr("x", function(d) { return x(d.PRVENSTVO); })
       .attr("width", x.rangeBand())
       .attr("y", function(d) { return y(d.BROJ_GOLOVA); })
@@ -89,7 +89,7 @@ function type(d) {
 function clicked (d) {
 
 if (flag == 1) {
-  d3.selectAll(".element")
+  d3.selectAll(".element") //uklanjanje postojećeg grafa 
   .remove();
 }
 
@@ -178,13 +178,13 @@ function type(d) {
   return d;
 }
 
-if (d.PRVENSTVO == "1934. Italija") { 
+if (d.PRVENSTVO == "1934. Italija") {
 
-  var margin = {top: 30, left: 50},
+   var margin = {top: 30, left: 50},
     width = 300;
     height = 200;
 
-  d3.json("italija.json", function(error, data) {
+  d3.json("italija34.json", function(error, data) {
 
     data.forEach(function(d) {
         d.IGRAC = d.IGRAC;
@@ -198,7 +198,7 @@ var xAxis = d3.svg.axis()
 var yAxis = d3.svg.axis()
     .scale(y)
     .orient("left")
-    .ticks(5);
+    .ticks(6);
  var tip = d3.tip()
    .attr('class', 'd3-tip')
   .offset([-10, 0])
